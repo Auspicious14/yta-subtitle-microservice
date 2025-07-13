@@ -14,13 +14,15 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Download and extract VOSK model
-RUN mkdir -p model && \
+RUN mkdir -p /app/model && \
     wget -q https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip || \
     { echo "Failed to download VOSK model"; exit 1; } && \
     unzip vosk-model-small-en-us-0.15.zip && \
-    mv vosk-model-small-en-us-0.15 model && \
-    rm vosk-model-small-en-us-0.15.zip || \
-    { echo "Failed to process VOSK model"; exit 1; }
+    mv vosk-model-small-en-us-0.15/* /app/model/ && \
+    rm -rf vosk-model-small-en-us-0.15 vosk-model-small-en-us-0.15.zip || \
+    { echo "Failed to process VOSK model"; exit 1; } && \
+    ls -la /app/model/ || \
+    { echo "Model directory contents missing"; exit 1; }
 
 # Copy application code
 COPY app /app
